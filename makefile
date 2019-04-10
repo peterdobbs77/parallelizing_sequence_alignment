@@ -1,5 +1,8 @@
 #makefile
-all: align.exe
+all: align.exe generate_genomes.exe
 
 align.exe: costMat.c align.c
 	gcc -g -o align.exe costMat.c align.c -lm
+
+generate_genomes.exe: random_sequence.c
+	gcc -g -o generate_genomes.exe random_sequence.c -lm

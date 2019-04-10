@@ -7,7 +7,7 @@ void trace(CostMatrix mat, int row, int col, char *s, char *t, char *alignS, cha
   
   if (row==0 && col==0){
     printf("%s\t%s\n", alignS, alignT);
-    fprintf(out,"%s\t%s\n", alignS, alignT);
+    fprintf(out,"%s\n%s\n", alignS, alignT);
     return;
   }
   
@@ -73,11 +73,17 @@ int main(int argc, char **argv){
   /* print the cost matrix */
   out = fopen("cost_matrix_out.txt","w");
   printMatrix(mat,out);
-  printf("min cost: %i\n",c_min);
-  fprintf(out,"min cost: %i\n",c_min);
-  trace(mat,length1,length2,s,t,align1,align2,alignLength,alignLength,c_min,out);
-  
   fclose(out);
+  
+  out = fopen("cost_matrix_out.txt","a");
+  fprintf(out,"min cost: %i\n",c_min);
+  fclose(out);
+  printf("min cost: %i\n",c_min);
+  
+  out = fopen("cost_matrix_out.txt","a");
+  trace(mat,length1,length2,s,t,align1,align2,alignLength,alignLength,c_min,out);
+  fclose(out);
+  
   free(s);
   free(t);
   free(align1);

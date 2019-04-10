@@ -1,5 +1,7 @@
 #!/bin/bash
-s=AATGC
-t=AGGC
+(./generate_genomes.exe)
+
+s=`cat genome1.txt`
+t=`cat genome2.txt`
 
 bash align.sh $s $t

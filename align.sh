@@ -1,11 +1,12 @@
 #!/bin/bash
-if [ $# -ne 2 ]; then
-  echo "Must enter 2 gene sequences"
-  exit
-fi
-lengthS=${#1}
-lengthT=${#2}
+(./generate_genomes.exe)
+
+s=`cat genome1.txt`
+t=`cat genome1.txt`
+
+lengthS=${#s}
+lengthT=${#t}
 
 #(echo $lengthS;echo $1;echo $lengthT;echo $2;) | (./align.exe)
 
-(./align.exe $lengthS $1 $lengthT $2)
+(./align.exe $lengthS $s $lengthT $t)

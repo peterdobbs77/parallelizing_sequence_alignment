@@ -27,10 +27,10 @@ void printMatrix(CostMatrix mat, FILE *out){
   unsigned int row, col;
   for(row=0;row<mat.rows;++row){
     for(col=0;col<mat.cols;++col){
-      printf("\t%i",getCost(mat,row,col));
-      fprintf(out,"\t%i",getCost(mat,row,col));
+      //printf("\t%02d",getCost(mat,row,col));
+      fprintf(out,"\t%02d",getCost(mat,row,col));
     }
-    printf("\n");
+    //printf("\n");
     fprintf(out,"\n");
   }
 }

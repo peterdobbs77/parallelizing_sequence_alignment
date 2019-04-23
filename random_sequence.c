@@ -4,7 +4,7 @@
 #include <math.h>
 #include <string.h>
 
-#define MAX_LENGTH 30
+#define MAX_LENGTH 3000000
 
 int main(void){
   int i=0, index=0;
@@ -21,6 +21,7 @@ int main(void){
   }
   fclose(fp);
   
+/*
   fp = fopen("./genome2.txt","w");
   
   for(i=0;i<MAX_LENGTH;i++){
@@ -29,6 +30,6 @@ int main(void){
     fprintf(fp,"%c",element);
   }
   fclose(fp);
-  
+*/
   return 0;
 }

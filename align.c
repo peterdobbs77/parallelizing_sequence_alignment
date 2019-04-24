@@ -3,7 +3,7 @@
 #include <string.h>
 #include "costMat.h"
 
-#define MAX_SEQUENCE_LENGTH 3000
+#define MAX_SEQUENCE_LENGTH 5000
 
 void trace_recursive(CostMatrix mat, int row, int col, char *s, char *t, char *alignS, char *alignT, int i, int j, int c_ij){
   
@@ -62,7 +62,6 @@ int main(void){
     s[i] = text[random()%4];
     t[i] = text[random()%4];
   }
-  //printf("Generated Random Genomes\n");
   
   char *align1 = (char*)malloc(sizeof(char)*MAX_SEQUENCE_LENGTH);
   char *align2 = (char*)malloc(sizeof(char)*MAX_SEQUENCE_LENGTH);
@@ -84,15 +83,14 @@ int main(void){
     }
   }
   c_min=c_ij;
-  printf("Finished Filling the Cost Matrix\n");
   /* trace back through the matrix to determine the optimal alignment */
   //trace_recursive(mat,MAX_SEQUENCE_LENGTH+1,MAX_SEQUENCE_LENGTH+1,s,t,align1,align2,MAX_SEQUENCE_LENGTH,MAX_SEQUENCE_LENGTH,c_min);
   trace_loop(s,t,align1,align2,mat);
-  printf("Finished Tracing the Cost Matrix\n");
+  printf("finished trace\n");
   
   /* ouput the cost matrix and optimal alignment sequences */
   out = fopen("cost_matrix_out.txt","w");
-  //printMatrix(mat,out);
+  printMatrix(mat,out);
   fprintf(out,"min cost: %i\n",c_min);  
   fprintf(out,"%s\n%s\n", align1, align2);
   fclose(out);

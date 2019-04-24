@@ -3,7 +3,7 @@
 #include <string.h>
 #include "costMat.h"
 
-#define MAX_SEQUENCE_LENGTH 5000
+#define MAX_SEQUENCE_LENGTH 10000
 
 void trace_recursive(CostMatrix mat, int row, int col, char *s, char *t, char *alignS, char *alignT, int i, int j, int c_ij){
   
@@ -27,7 +27,6 @@ void trace_recursive(CostMatrix mat, int row, int col, char *s, char *t, char *a
   }
 }
 
-// TODO: finish this work...
 void trace_loop(char *s, char *t, char *alignS, char *alignT, CostMatrix mat){
   int i=0,row=0,j=0,col=0,c_ij=0;
   row = mat.rows-1;
@@ -70,7 +69,9 @@ int main(void){
   mat.cost=(unsigned int*)malloc(sizeof(unsigned int)*(MAX_SEQUENCE_LENGTH+1)*(MAX_SEQUENCE_LENGTH+1));
   mat.rows=MAX_SEQUENCE_LENGTH+1;
   mat.cols=MAX_SEQUENCE_LENGTH+1;
+  
   /* fill the cost matrix */
+  printf("start filling cost matrix\n");
   for(row=0;row<mat.rows;++row){
     setCost(mat,row,0,row);
     for(col=1;col<mat.cols;++col){
@@ -90,7 +91,7 @@ int main(void){
   
   /* ouput the cost matrix and optimal alignment sequences */
   out = fopen("cost_matrix_out.txt","w");
-  printMatrix(mat,out);
+  //printMatrix(mat,out);
   fprintf(out,"min cost: %i\n",c_min);  
   fprintf(out,"%s\n%s\n", align1, align2);
   fclose(out);

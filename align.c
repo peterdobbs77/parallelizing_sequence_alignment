@@ -28,14 +28,26 @@ void trace_recursive(CostMatrix mat, int row, int col, char *s, char *t, char *a
 }
 
 // TODO: finish this work...
-void trace_loop(char *s1, char *s2, CostMatrix mat){
-  int i=0,row=0,j=0,col=0;
-  for(i=mat.rows-1, j=mat.cols-1;i>0,j>0;--i,--j){
-    
+void trace_loop(char *s, char *t, char *alignS, char *alignT, CostMatrix mat){
+  int i=0,row=0,j=0,col=0,c_ij=0;
+  row = mat.rows-1;
+  col = mat.cols-1;
+  for(i = row, j = col; i > 0, j > 0;){
+    c_ij = getCost(mat,row,col);
+    if(getCost(mat,row-1,col)+1 == c_ij) {   //above origin
+      alignS[--i] = s[--row];
+      alignT[--j] = '_';
+    } else if(getCost(mat,row-1,col-1)+getMatchCost(s[row-1],t[col-1]) == c_ij) {  //diagonal origin
+      alignS[--i] = s[--row];
+      alignT[--j] = t[--col];
+    } else if(getCost(mat,row,col-1)+1 == c_ij) { //left origin
+      alignS[--i] = '_';
+      alignT[--j] = t[--col];
+    }
   }
 }
 
-int main(int argc, char **argv){
+int main(void){
   unsigned int i=0, row=0, col=0;
   int length1=0, length2=0, alignLength=0, c_ij=0, c_min=0;
   CostMatrix mat;
@@ -61,7 +73,6 @@ int main(int argc, char **argv){
   mat.cols=MAX_SEQUENCE_LENGTH+1;
   /* fill the cost matrix */
   for(row=0;row<mat.rows;++row){
-    fscanf("%c",&s_i)
     setCost(mat,row,0,row);
     for(col=1;col<mat.cols;++col){
       if(row==0){ 
@@ -75,17 +86,19 @@ int main(int argc, char **argv){
   c_min=c_ij;
   printf("Finished Filling the Cost Matrix\n");
   /* trace back through the matrix to determine the optimal alignment */
-  trace_recursive(mat,MAX_SEQUENCE_LENGTH+1,MAX_SEQUENCE_LENGTH+1,s,t,align1,align2,MAX_SEQUENCE_LENGTH,MAX_SEQUENCE_LENGTH,c_min);
+  //trace_recursive(mat,MAX_SEQUENCE_LENGTH+1,MAX_SEQUENCE_LENGTH+1,s,t,align1,align2,MAX_SEQUENCE_LENGTH,MAX_SEQUENCE_LENGTH,c_min);
+  trace_loop(s,t,align1,align2,mat);
+  printf("Finished Tracing the Cost Matrix\n");
   
   /* ouput the cost matrix and optimal alignment sequences */
   out = fopen("cost_matrix_out.txt","w");
-  printMatrix(mat,out);
+  //printMatrix(mat,out);
   fprintf(out,"min cost: %i\n",c_min);  
   fprintf(out,"%s\n%s\n", align1, align2);
   fclose(out);
   
-  printf("min cost: %i\n",c_min);
-  printf("%s\t%s\n", align1, align2);
+  //printf("min cost: %i\n",c_min);
+  //printf("%s\t%s\n", align1, align2);
   
   free(s);
   free(t);

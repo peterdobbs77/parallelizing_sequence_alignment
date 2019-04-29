@@ -108,6 +108,6 @@ int main(void){
   time_i = clock() - time_i;
   time_taken = ((double)time_i)/CLOCKS_PER_SEC;
   printf("task took %f seconds\n",time_taken);
-  
+
   return 0;
 }

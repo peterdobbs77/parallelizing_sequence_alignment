@@ -6,7 +6,7 @@
 
 #define MAX_LENGTH 10000
 
-int main(void){
+  int main(void){
   int i=0, index=0;
   char text[] = "ATGC";
   char element;

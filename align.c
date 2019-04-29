@@ -78,7 +78,7 @@ int main(void){
   printf("RANDOM SEQUENCES\n");
   time_i = clock();
   printf("lengthS,lengthT,MinCost;\n");
-  for(i=0;i<200;++i){
+  for(i=0;i<400;++i){
     compareRandomSequences();
   }
   time_i = clock() - time_i;
@@ -99,7 +99,7 @@ int main(void){
   }
   fclose(in);
   
-  for(i=0;i<200;++i){
+  for(i=0;i<400;++i){
     compareGivenSequenceWithRandom(sequence,length);
   }
   

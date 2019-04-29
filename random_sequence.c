@@ -4,7 +4,7 @@
 #include <math.h>
 #include <string.h>
 
-#define MAX_LENGTH 3000000
+#define MAX_LENGTH 10000
 
 int main(void){
   int i=0, index=0;
@@ -12,24 +12,13 @@ int main(void){
   char element;
   FILE* fp;
   
-  fp = fopen("./genome1.txt","w");
+  fp = fopen("./genome.txt","w");
   
   for(i=0;i<MAX_LENGTH;i++){
-    index = random()%4;
-    element = text[index];
+    element = text[random()%4];
     fprintf(fp,"%c",element);
   }
   fclose(fp);
   
-/*
-  fp = fopen("./genome2.txt","w");
-  
-  for(i=0;i<MAX_LENGTH;i++){
-    index = random()%4;
-    element = text[index];\
-    fprintf(fp,"%c",element);
-  }
-  fclose(fp);
-*/
   return 0;
 }

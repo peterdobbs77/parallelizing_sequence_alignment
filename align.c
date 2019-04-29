@@ -2,76 +2,18 @@
 #include <stdio.h>
 #include <string.h>
 #include "costMat.h"
+#include <time.h>
 
-#define MAX_SEQUENCE_LENGTH 10000
+#define MAX_SEQUENCE_LENGTH 100000
 
-void trace_recursive(CostMatrix mat, int row, int col, char *s, char *t, char *alignS, char *alignT, int i, int j, int c_ij){
-  
-  if (row==0 && col==0){
-    printf("Finished Retracing the Cost Matrix\n");
-    return;
-  }
-  
-  if(getCost(mat,row-1,col)+1 == c_ij) {   //above origin
-    alignS[--i] = s[row-1];
-    alignT[--j] = '_';
-    trace_recursive(mat,row-1,col,s,t,alignS,alignT,i,j,getCost(mat,row-1,col));
-  } else if(getCost(mat,row-1,col-1)+getMatchCost(s[row-1],t[col-1]) == c_ij) {  //diagonal origin
-    alignS[--i] = s[row-1];
-    alignT[--j] = t[col-1];
-    trace_recursive(mat,row-1,col-1,s,t,alignS,alignT,i,j,getCost(mat,row-1,col-1));
-  } else if(getCost(mat,row,col-1)+1 == c_ij) { //left origin
-    alignS[--i] = '_';
-    alignT[--j] = t[col-1];
-    trace_recursive(mat,row,col-1,s,t,alignS,alignT,i,j,getCost(mat,row,col-1));
-  }
-}
-
-void trace_loop(char *s, char *t, char *alignS, char *alignT, CostMatrix mat){
-  int i=0,row=0,j=0,col=0,c_ij=0;
-  row = mat.rows-1;
-  col = mat.cols-1;
-  for(i = row, j = col; i > 0, j > 0;){
-    c_ij = getCost(mat,row,col);
-    if(getCost(mat,row-1,col)+1 == c_ij) {   //above origin
-      alignS[--i] = s[--row];
-      alignT[--j] = '_';
-    } else if(getCost(mat,row-1,col-1)+getMatchCost(s[row-1],t[col-1]) == c_ij) {  //diagonal origin
-      alignS[--i] = s[--row];
-      alignT[--j] = t[--col];
-    } else if(getCost(mat,row,col-1)+1 == c_ij) { //left origin
-      alignS[--i] = '_';
-      alignT[--j] = t[--col];
-    }
-  }
-}
-
-int main(void){
-  unsigned int i=0, row=0, col=0;
-  int length1=0, length2=0, alignLength=0, c_ij=0, c_min=0;
+int setupAndFillCostMatrix(char *s, int lengthS, char *t, int lengthT){
+  unsigned int row, col, c_ij=0;
   CostMatrix mat;
-  FILE* out;
-  char text[] = "ATGC";
-  char s_i, t_j;
-  
-  char *s = (char*)malloc(sizeof(char)*MAX_SEQUENCE_LENGTH);
-  char *t = (char*)malloc(sizeof(char)*MAX_SEQUENCE_LENGTH);
-  
-  for(i=0;i<MAX_SEQUENCE_LENGTH;i++){
-    s[i] = text[random()%4];
-    t[i] = text[random()%4];
-  }
-  
-  char *align1 = (char*)malloc(sizeof(char)*MAX_SEQUENCE_LENGTH);
-  char *align2 = (char*)malloc(sizeof(char)*MAX_SEQUENCE_LENGTH);
-  
-  /* initialize the cost matrix */
-  mat.cost=(unsigned int*)malloc(sizeof(unsigned int)*(MAX_SEQUENCE_LENGTH+1)*(MAX_SEQUENCE_LENGTH+1));
-  mat.rows=MAX_SEQUENCE_LENGTH+1;
-  mat.cols=MAX_SEQUENCE_LENGTH+1;
+  mat.cost=(unsigned int*)malloc(sizeof(unsigned int)*(lengthS+1)*(lengthT+1));
+  mat.rows=lengthS+1;
+  mat.cols=lengthT+1;
   
   /* fill the cost matrix */
-  printf("start filling cost matrix\n");
   for(row=0;row<mat.rows;++row){
     setCost(mat,row,0,row);
     for(col=1;col<mat.cols;++col){
@@ -83,26 +25,89 @@ int main(void){
       setCost(mat,row,col,c_ij);
     }
   }
-  c_min=c_ij;
-  /* trace back through the matrix to determine the optimal alignment */
-  //trace_recursive(mat,MAX_SEQUENCE_LENGTH+1,MAX_SEQUENCE_LENGTH+1,s,t,align1,align2,MAX_SEQUENCE_LENGTH,MAX_SEQUENCE_LENGTH,c_min);
-  trace_loop(s,t,align1,align2,mat);
-  printf("finished trace\n");
+  return c_ij;
+}
+
+void compareRandomSequences(){
+  unsigned int i=0;
+  int lengthS=MAX_SEQUENCE_LENGTH/((random()%100)+1), lengthT=MAX_SEQUENCE_LENGTH/((random()%100)+1), c_min=0;
+  char text[] = "ATGC";
+  char s_i, t_j;
   
-  /* ouput the cost matrix and optimal alignment sequences */
-  out = fopen("cost_matrix_out.txt","w");
-  //printMatrix(mat,out);
-  fprintf(out,"min cost: %i\n",c_min);  
-  //fprintf(out,"%s\n%s\n", align1, align2);
-  fclose(out);
+  char *s = (char*)malloc(sizeof(char)*lengthS);
+  char *t = (char*)malloc(sizeof(char)*lengthT);
   
-  //printf("min cost: %i\n",c_min);
-  //printf("%s\t%s\n", align1, align2);
+  for(i=0;i<lengthS;i++){
+    s[i] = text[random()%4];
+  }
+  for(i=0;i<lengthT;i++){
+    t[i] = text[random()%4];
+  }
+  
+  c_min = setupAndFillCostMatrix(s, lengthS, t, lengthT);
+  printf("%i,%i,%i;\n", lengthS, lengthT, c_min);
   
   free(s);
   free(t);
-  free(align1);
-  free(align2);
+}
+
+void compareGivenSequenceWithRandom(char *s, int lengthS){
+  unsigned int i=0;
+  char text[] = "ATGC";
+  int lengthT = MAX_SEQUENCE_LENGTH/((random()%100)+1), c_min=0;
+  char *t = (char*)malloc(sizeof(char)*lengthT);
+  
+  for(i=0;i<lengthT;i++){
+    t[i] = text[random()%4];
+  }
+  
+  c_min = setupAndFillCostMatrix(s, lengthS, t, lengthT);
+  printf("%i,%i,%i;\n", lengthS, lengthT, c_min);
+  
+  free(t);
+}
+
+int main(void){
+  int i=0, length=0;
+  clock_t time_i;
+  FILE *in;
+  char *sequence;
+  double time_taken;
+  
+  /* RANDOM SEQUENCES */
+  printf("RANDOM SEQUENCES\n");
+  time_i = clock();
+  printf("lengthS,lengthT,MinCost;\n");
+  for(i=0;i<100;++i){
+    compareRandomSequences();
+  }
+  time_i = clock() - time_i;
+  time_taken = ((double)time_i)/CLOCKS_PER_SEC;
+  printf("task took %f seconds\n",time_taken);
+  
+  /* COMPARE SET SEQUENCE WITH RANDOM SEQUENCES */
+  printf("COMPARE SET SEQUENCE WITH RANDOM SEQUENCES\n");
+  time_i = clock();
+  printf("----------------\n");
+  printf("lengthS,lengthT,MinCost;\n");
+  in = fopen("./genome.txt","r");
+	for (length = 0; fgetc(in) != EOF; ++length);
+  rewind(in);
+  sequence = (char*)malloc(sizeof(char)*length);
+  for(i=0;i<length;++i){
+    sequence[i] = fgetc(in);
+  }
+  fclose(in);
+  
+  for(i=0;i<100;++i){
+    compareGivenSequenceWithRandom(sequence,length);
+  }
+  
+  free(sequence);
+  
+  time_i = clock() - time_i;
+  time_taken = ((double)time_i)/CLOCKS_PER_SEC;
+  printf("task took %f seconds\n",time_taken);
   
   return 0;
 }

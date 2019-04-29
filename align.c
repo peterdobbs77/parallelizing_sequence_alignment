@@ -93,7 +93,7 @@ int main(void){
   out = fopen("cost_matrix_out.txt","w");
   //printMatrix(mat,out);
   fprintf(out,"min cost: %i\n",c_min);  
-  fprintf(out,"%s\n%s\n", align1, align2);
+  //fprintf(out,"%s\n%s\n", align1, align2);
   fclose(out);
   
   //printf("min cost: %i\n",c_min);

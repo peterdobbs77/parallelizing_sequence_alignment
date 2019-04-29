@@ -3,8 +3,10 @@
 #include <string.h>
 #include "costMat.h"
 #include <time.h>
+#include <omp.h>
 
 #define MAX_SEQUENCE_LENGTH 100000
+#define N 200
 
 int setupAndFillCostMatrix(char *s, int lengthS, char *t, int lengthT){
   unsigned int row, col, c_ij=0;
@@ -78,7 +80,8 @@ int main(void){
   printf("RANDOM SEQUENCES\n");
   time_i = clock();
   printf("lengthS,lengthT,MinCost;\n");
-  for(i=0;i<400;++i){
+  #pragma omp parallel for
+  for(i=0;i<N;++i){
     compareRandomSequences();
   }
   time_i = clock() - time_i;
@@ -86,9 +89,9 @@ int main(void){
   printf("task took %f seconds\n",time_taken);
   
   /* COMPARE SET SEQUENCE WITH RANDOM SEQUENCES */
+  printf("----------------\n");
   printf("COMPARE SET SEQUENCE WITH RANDOM SEQUENCES\n");
   time_i = clock();
-  printf("----------------\n");
   printf("lengthS,lengthT,MinCost;\n");
   in = fopen("./genome.txt","r");
 	for (length = 0; fgetc(in) != EOF; ++length);
@@ -99,7 +102,8 @@ int main(void){
   }
   fclose(in);
   
-  for(i=0;i<400;++i){
+  #pragma omp parallel for
+  for(i=0;i<N;++i){
     compareGivenSequenceWithRandom(sequence,length);
   }
   

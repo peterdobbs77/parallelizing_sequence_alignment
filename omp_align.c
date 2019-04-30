@@ -95,7 +95,7 @@ int main(int argc, char **argv){
   printf("RANDOM SEQUENCES\n");
   time_i = clock();
   printf("n,threadId,lengthS,lengthT,MinCost;\n");
-  #pragma omp parallel for
+  #pragma omp parallel for shared(i)
   for(i=0;i<N;++i){
     #pragma omp critical
     {
@@ -121,7 +121,7 @@ int main(int argc, char **argv){
   fclose(in);
   
   printf("n,threadId,lengthS,lengthT,MinCost;\n");
-  #pragma omp parallel for
+  #pragma omp parallel for shared(i)
   for(i=0;i<N;++i){
     #pragma omp critical
     {

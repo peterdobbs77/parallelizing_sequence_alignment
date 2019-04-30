@@ -6,7 +6,7 @@
 #include <omp.h>
 
 #define MAX_SEQUENCE_LENGTH 100000
-#define N 200
+#define N 600
 
 int setupAndFillCostMatrix(char *s, int lengthS, char *t, int lengthT){
   unsigned int row, col, c_ij=0;
@@ -27,6 +27,7 @@ int setupAndFillCostMatrix(char *s, int lengthS, char *t, int lengthT){
       setCost(mat,row,col,c_ij);
     }
   }
+  free(mat.cost);
   return c_ij;
 }
 
@@ -35,6 +36,8 @@ void compareRandomSequences(){
   int lengthS=MAX_SEQUENCE_LENGTH/((random()%100)+1), lengthT=MAX_SEQUENCE_LENGTH/((random()%100)+1), c_min=0;
   char text[] = "ATGC";
   char s_i, t_j;
+  
+  printf("%i,%i",lengthS,lengthT);
   
   char *s = (char*)malloc(sizeof(char)*lengthS);
   char *t = (char*)malloc(sizeof(char)*lengthT);
@@ -47,7 +50,7 @@ void compareRandomSequences(){
   }
   
   c_min = setupAndFillCostMatrix(s, lengthS, t, lengthT);
-  printf("%i,%i,%i;\n", lengthS, lengthT, c_min);
+  printf(",%i;\n", c_min);
   
   free(s);
   free(t);
@@ -57,6 +60,9 @@ void compareGivenSequenceWithRandom(char *s, int lengthS){
   unsigned int i=0;
   char text[] = "ATGC";
   int lengthT = MAX_SEQUENCE_LENGTH/((random()%100)+1), c_min=0;
+  
+  printf("%i,%i",lengthS,lengthT);
+  
   char *t = (char*)malloc(sizeof(char)*lengthT);
   
   for(i=0;i<lengthT;i++){
@@ -64,7 +70,7 @@ void compareGivenSequenceWithRandom(char *s, int lengthS){
   }
   
   c_min = setupAndFillCostMatrix(s, lengthS, t, lengthT);
-  printf("%i,%i,%i;\n", lengthS, lengthT, c_min);
+  printf(",%i;\n", c_min);
   
   free(t);
 }
@@ -79,20 +85,22 @@ int main(void){
   /* RANDOM SEQUENCES */
   printf("RANDOM SEQUENCES\n");
   time_i = clock();
-  printf("lengthS,lengthT,MinCost;\n");
-  #pragma omp parallel for
+  //printf("n,threadId,lengthS,lengthT,MinCost\n");
+  printf("n,lengthS,lengthT,MinCost\n");
+  //#pragma omp parallel for num_threads(2)
   for(i=0;i<N;++i){
+    //printf("%i,%i,",i,omp_get_thread_num());
+    printf("%i,",i);
     compareRandomSequences();
   }
   time_i = clock() - time_i;
   time_taken = ((double)time_i)/CLOCKS_PER_SEC;
   printf("task took %f seconds\n",time_taken);
   
-  /* COMPARE SET SEQUENCE WITH RANDOM SEQUENCES */
   printf("----------------\n");
+  /* COMPARE SET SEQUENCE WITH RANDOM SEQUENCES */
   printf("COMPARE SET SEQUENCE WITH RANDOM SEQUENCES\n");
   time_i = clock();
-  printf("lengthS,lengthT,MinCost;\n");
   in = fopen("./genome.txt","r");
 	for (length = 0; fgetc(in) != EOF; ++length);
   rewind(in);
@@ -102,13 +110,15 @@ int main(void){
   }
   fclose(in);
   
-  #pragma omp parallel for
+  //printf("n,threadId,lengthS,lengthT,MinCost\n");
+  printf("n,lengthS,lengthT,MinCost;\n");
+  //#pragma omp parallel for num_threads(2)
   for(i=0;i<N;++i){
+    //printf("%i,%i,",i,omp_get_thread_num());
+    printf("%i,",i);
     compareGivenSequenceWithRandom(sequence,length);
   }
-  
   free(sequence);
-  
   time_i = clock() - time_i;
   time_taken = ((double)time_i)/CLOCKS_PER_SEC;
   printf("task took %f seconds\n",time_taken);

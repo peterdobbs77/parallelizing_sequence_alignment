@@ -1,1 +1,2 @@
-# parallelizing_sequence_alignment
+# Algorithms for Biological Sequence Comparison Scoring
+

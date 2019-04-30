@@ -1,2 +1,2 @@
 #!/bin/bash
-(./align_omp) > ./output.txt
+(./align.exe) > ./output.txt

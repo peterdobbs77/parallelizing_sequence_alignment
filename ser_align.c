@@ -6,7 +6,7 @@
 #include <omp.h>
 
 #define MAX_SEQUENCE_LENGTH 100000
-#define N 600
+#define N 100
 
 int setupAndFillCostMatrix(char *s, int lengthS, char *t, int lengthT){
   unsigned int row, col, c_ij=0;
@@ -85,11 +85,8 @@ int main(void){
   /* RANDOM SEQUENCES */
   printf("RANDOM SEQUENCES\n");
   time_i = clock();
-  //printf("n,threadId,lengthS,lengthT,MinCost\n");
   printf("n,lengthS,lengthT,MinCost\n");
-  //#pragma omp parallel for num_threads(2)
   for(i=0;i<N;++i){
-    //printf("%i,%i,",i,omp_get_thread_num());
     printf("%i,",i);
     compareRandomSequences();
   }
@@ -110,11 +107,8 @@ int main(void){
   }
   fclose(in);
   
-  //printf("n,threadId,lengthS,lengthT,MinCost\n");
   printf("n,lengthS,lengthT,MinCost;\n");
-  //#pragma omp parallel for num_threads(2)
   for(i=0;i<N;++i){
-    //printf("%i,%i,",i,omp_get_thread_num());
     printf("%i,",i);
     compareGivenSequenceWithRandom(sequence,length);
   }

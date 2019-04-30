@@ -1,4 +1,6 @@
 
 *.exe
-align_omp
+omp_align
+mpi_align
+ser_align
 

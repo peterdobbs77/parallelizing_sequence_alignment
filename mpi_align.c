@@ -10,11 +10,15 @@ to run this:
 #include "mpi.h"
 #include <stdio.h>
 #include <stdlib.h>
-#define MAX_SEQUENCE_LENGTH 100000
-#define N         200
-#define MASTER		0
+#include <string.h>
+#include "costMat.h"
+#include <time.h>
 
-float  sequence[100000];
+#define MAX_SEQUENCE_LENGTH 100000
+#define N         100
+#define MASTER		0
+  
+char* sequence;
 
 int setupAndFillCostMatrix(char *s, int lengthS, char *t, int lengthT){
   unsigned int row, col, c_ij=0;
@@ -84,40 +88,39 @@ void compareGivenSequenceWithRandom(char *s, int lengthS){
 
 int main (int argc, char *argv[])
 {
-  int   nprocs, rank, rc, dest, offset, i, j, tag1,
+  int   nprocs, rank, rc, dest, i, j, tag1,
         tag2, tag3, source, lengthS, lengthT;
-  char  *t;
+  FILE *in;
   MPI_Status status;
 
   /***** Initializations *****/
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
   MPI_Comm_rank(MPI_COMM_WORLD,&rank);
-  printf ("MPI task %d has started...\n", rank);
-  chunksize = (ARRAYSIZE / nprocs);
+  //printf ("MPI task %d has started...\n", rank);
   tag1 = 1;
+  tag2 = 2;
 
   /***** Master task only ******/
   if (rank == MASTER){
 
-    /* Initialize the array */
+    /* Initialize the query sequence */
     printf("COMPARE SET SEQUENCE WITH RANDOM SEQUENCES\n");
-    FILE *in = fopen("./genome.txt","r");
+    in = fopen("./genome.txt","r");
     for (lengthS = 0; fgetc(in) != EOF; ++lengthS);
     rewind(in);
     sequence = (char*)malloc(sizeof(char)*lengthS);
     for(i=0;i<lengthS;++i){
       sequence[i] = fgetc(in);
     }
-    sequence[i] = '\0';
     fclose(in);
     
     printf("n,lengthS,lengthT,MinCost;\n");
-    /* Send each task a copy of the array - master keeps 1st part */
-    offset = chunksize;
+    /* Send each task a copy of the sequence */
     for (dest=1; dest<nprocs; dest++) {
-      MPI_Send(&sequence, lengthS, MPI_CHAR, dest, tag1, MPI_COMM_WORLD);
-      //printf("Sent sequence to task %d\n",dest);
+      MPI_Send(&lengthS,1,MPI_INT,dest,tag2,MPI_COMM_WORLD);
+      MPI_Send(&sequence,lengthS,MPI_CHAR,dest,tag1,MPI_COMM_WORLD);
+      printf("Sent sequence to task %d\n",dest);
     }
 
     /* Master does its part of the work */
@@ -127,7 +130,7 @@ int main (int argc, char *argv[])
     
     /* Wait to receive results from each task */
     for (source=1; source<nprocs; source++) {
-      MPI_Recv(&sequence, lengthS, MPI_CHAR, source, tag1, MPI_COMM_WORLD, &status);
+      MPI_Recv(&lengthS,1,MPI_INT,source,tag2,MPI_COMM_WORLD,&status);
     }
     
   }  /* end of master section */
@@ -138,14 +141,16 @@ int main (int argc, char *argv[])
   if (rank > MASTER) {
 
     /* Receive my copy of array from the master task */
-    MPI_Recv(&sequence, lengthS, MPI_CHAR, source, tag1, MPI_COMM_WORLD, &status);
+    MPI_Recv(&lengthS,1,MPI_INT,MASTER,tag2,MPI_COMM_WORLD,&status);
+    MPI_Recv(&sequence,lengthS,MPI_CHAR,MASTER,tag1,MPI_COMM_WORLD,&status);
     
     for(i=0;i<N/nprocs;++i){
       compareGivenSequenceWithRandom(sequence,lengthS);
     }
     
     /* Send my copy back to the master task */
-    MPI_Send(&sequence, lengthS, MPI_CHAR, dest, tag1, MPI_COMM_WORLD);
+    MPI_Send(&sequence,lengthS,MPI_CHAR,MASTER,tag1,MPI_COMM_WORLD);
+    MPI_Send(&lengthS,1,MPI_INT,MASTER,tag2,MPI_COMM_WORLD);
     
   } /* end of non-master */
 

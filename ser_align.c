@@ -6,7 +6,6 @@
 #include <omp.h>
 
 #define MAX_SEQUENCE_LENGTH 100000
-#define N 100
 
 int setupAndFillCostMatrix(char *s, int lengthS, char *t, int lengthT){
   unsigned int row, col, c_ij=0;
@@ -75,17 +74,21 @@ void compareGivenSequenceWithRandom(char *s, int lengthS){
   free(t);
 }
 
-int main(void){
-  int i=0, length=0;
+int main(int argc, char **argv){
+  int i=0, length=0, N=0;
   clock_t time_i;
   FILE *in;
   char *sequence;
   double time_taken;
   
+  // input arguments
+  if (argc != 2) exit(EXIT_FAILURE);
+  N=atoi(argv[1]);
+  
   /* RANDOM SEQUENCES */
   printf("RANDOM SEQUENCES\n");
   time_i = clock();
-  printf("n,lengthS,lengthT,MinCost\n");
+  printf("n,lengthS,lengthT,MinCost;\n");
   for(i=0;i<N;++i){
     printf("%i,",i);
     compareRandomSequences();

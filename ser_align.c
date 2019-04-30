@@ -79,6 +79,7 @@ int main(int argc, char **argv){
   clock_t time_i;
   FILE *in;
   char *sequence;
+  char **sequence_list;
   double time_taken;
   
   // input arguments
@@ -108,6 +109,10 @@ int main(int argc, char **argv){
   for(i=0;i<length;++i){
     sequence[i] = fgetc(in);
   }
+  fclose(in);
+  
+  in = fopen("./genome_list.txt","r");
+  
   fclose(in);
   
   printf("n,lengthS,lengthT,MinCost;\n");

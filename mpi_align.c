@@ -15,10 +15,9 @@ to run this:
 #include <time.h>
 
 #define MAX_SEQUENCE_LENGTH 100000
-#define N         100
 #define MASTER		0
-  
-char* sequence;
+
+char sequence[MAX_SEQUENCE_LENGTH];
 
 int setupAndFillCostMatrix(char *s, int lengthS, char *t, int lengthT){
   unsigned int row, col, c_ij=0;
@@ -42,37 +41,12 @@ int setupAndFillCostMatrix(char *s, int lengthS, char *t, int lengthT){
   return c_ij;
 }
 
-void compareRandomSequences(){
-  unsigned int i=0;
-  int lengthS=MAX_SEQUENCE_LENGTH/((random()%100)+1), lengthT=MAX_SEQUENCE_LENGTH/((random()%100)+1), c_min=0;
-  char text[] = "ATGC";
-  char s_i, t_j;
-  
-  printf("%i,%i",lengthS,lengthT);
-  
-  char *s = (char*)malloc(sizeof(char)*lengthS);
-  char *t = (char*)malloc(sizeof(char)*lengthT);
-  
-  for(i=0;i<lengthS;i++){
-    s[i] = text[random()%4];
-  }
-  for(i=0;i<lengthT;i++){
-    t[i] = text[random()%4];
-  }
-  
-  c_min = setupAndFillCostMatrix(s, lengthS, t, lengthT);
-  printf(",%i;\n", c_min);
-  
-  free(s);
-  free(t);
-}
-
 void compareGivenSequenceWithRandom(char *s, int lengthS){
   unsigned int i=0;
   char text[] = "ATGC";
   int lengthT = MAX_SEQUENCE_LENGTH/((random()%100)+1), c_min=0;
   
-  printf("%i,%i",lengthS,lengthT);
+  //printf("%i,%i",lengthS,lengthT);
   
   char *t = (char*)malloc(sizeof(char)*lengthT);
   
@@ -81,7 +55,7 @@ void compareGivenSequenceWithRandom(char *s, int lengthS){
   }
   
   c_min = setupAndFillCostMatrix(s, lengthS, t, lengthT);
-  printf(",%i;\n", c_min);
+  //printf(",%i;\n", c_min);
   
   free(t);
 }
@@ -89,10 +63,16 @@ void compareGivenSequenceWithRandom(char *s, int lengthS){
 int main (int argc, char *argv[])
 {
   int   nprocs, rank, rc, dest, i, j, tag1,
-        tag2, tag3, source, lengthS, lengthT;
+        tag2, tag3, source, lengthS, lengthT, N;
   FILE *in;
   MPI_Status status;
-
+  
+  //clock_t time_i;
+  //time_i = clock();
+  
+  // command line input
+  N=atoi(argv[1]);
+  
   /***** Initializations *****/
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -109,18 +89,18 @@ int main (int argc, char *argv[])
     in = fopen("./genome.txt","r");
     for (lengthS = 0; fgetc(in) != EOF; ++lengthS);
     rewind(in);
-    sequence = (char*)malloc(sizeof(char)*lengthS);
     for(i=0;i<lengthS;++i){
       sequence[i] = fgetc(in);
     }
+    sequence[i]='\0';
     fclose(in);
     
-    printf("n,lengthS,lengthT,MinCost;\n");
+    //printf("lengthS,lengthT,MinCost;\n");
     /* Send each task a copy of the sequence */
     for (dest=1; dest<nprocs; dest++) {
       MPI_Send(&lengthS,1,MPI_INT,dest,tag2,MPI_COMM_WORLD);
       MPI_Send(&sequence,lengthS,MPI_CHAR,dest,tag1,MPI_COMM_WORLD);
-      printf("Sent sequence to task %d\n",dest);
+      //printf("Sent sequence to task %d\n",dest);
     }
 
     /* Master does its part of the work */
@@ -156,5 +136,8 @@ int main (int argc, char *argv[])
 
   MPI_Finalize();
   
+  //time_i = clock() - time_i;
+  //printf("task took %f seconds\n",((double)time_i)/CLOCKS_PER_SEC);
+    
 
 }   /* end of main */

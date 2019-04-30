@@ -1,0 +1,5 @@
+RANDOM SEQUENCES
+task took 362.460000 seconds
+----------------
+COMPARE SET SEQUENCE WITH RANDOM SEQUENCES
+task took 84.230000 seconds

@@ -47,10 +47,10 @@ void compareRandomSequences(){
   }
   
   c_min = setupAndFillCostMatrix(s, lengthS, t, lengthT);
-  #pragma omp critical
-  {
-    printf("%i,%i,%i;\n",lengthS,lengthT,c_min);
-  }
+  //#pragma omp critical
+  //{
+  //  printf("%i,%i,%i;\n",lengthS,lengthT,c_min);
+  //}
   
   free(s);
   free(t);
@@ -68,10 +68,10 @@ void compareGivenSequenceWithRandom(char *s, int lengthS){
   }
   
   c_min = setupAndFillCostMatrix(s, lengthS, t, lengthT);
-  #pragma omp critical
-  {
-    printf("%i,%i,%i;\n",lengthS,lengthT,c_min);
-  }
+  //#pragma omp critical
+  //{
+  //  printf("%i,%i,%i;\n",lengthS,lengthT,c_min);
+  //}
   
   free(t);
 }
@@ -94,13 +94,13 @@ int main(int argc, char **argv){
   /* RANDOM SEQUENCES */
   printf("RANDOM SEQUENCES\n");
   time_i = clock();
-  printf("n,threadId,lengthS,lengthT,MinCost;\n");
-  #pragma omp parallel for shared(i)
+  //printf("n,threadId,lengthS,lengthT,MinCost;\n");
+  #pragma omp parallel for //shared(i)
   for(i=0;i<N;++i){
-    #pragma omp critical
-    {
-      printf("%i,%i,",i,omp_get_thread_num());
-    }
+    //#pragma omp critical
+    //{
+    //  printf("%i,%i,",i,omp_get_thread_num());
+    //}
     compareRandomSequences();
   }
   time_i = clock() - time_i;
@@ -120,13 +120,13 @@ int main(int argc, char **argv){
   }
   fclose(in);
   
-  printf("n,threadId,lengthS,lengthT,MinCost;\n");
-  #pragma omp parallel for shared(i)
+  //printf("n,threadId,lengthS,lengthT,MinCost;\n");
+  #pragma omp parallel for //shared(i)
   for(i=0;i<N;++i){
-    #pragma omp critical
-    {
-      printf("%i,%i,",i,omp_get_thread_num());
-    }
+    //#pragma omp critical
+    //{
+    //  printf("%i,%i,",i,omp_get_thread_num());
+    //}
     compareGivenSequenceWithRandom(sequence,length);
   }
   free(sequence);

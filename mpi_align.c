@@ -22,7 +22,7 @@ char sequence[MAX_SEQUENCE_LENGTH];
 int setupAndFillCostMatrix(char *s, int lengthS, char *t, int lengthT){
   unsigned int row, col, c_ij=0;
   CostMatrix mat;
-  mat.cost=(unsigned int*)malloc(sizeof(unsigned int)*(lengthS+1)*(lengthT+1));
+  mat.cost=(int*)malloc(sizeof(int)*(lengthS+1)*(lengthT+1));
   mat.rows=lengthS+1;
   mat.cols=lengthT+1;
   
